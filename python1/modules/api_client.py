@@ -1,18 +1,21 @@
 import json
-import urllib.error
-import urllib.request
+from urllib.error import HTTPError, URLError
+from urllib.request import urlopen
 
 url = 'https://jsonplaceholder.typicode.com/users'
 
-def fetch_data(url: str) -> dict | list:
+def fetchData(url: str):
     try:
-        with urllib.request.urlopen(url, timeout=10) as response:
-            raw_data = response.read().decode("utf-8")
-            return json.loads(raw_data)
-    except (urllib.error.HTTPError, urllib.error.URLError) as e:
+        with urlopen(url, timeout=10) as response:
+            data = response.read().decode("utf-8")
+            users = json.loads(data)
+            names = {user["name"] for user in users}
+            emails = {user["email"] for user in users}
+            return names, emails
+    except (HTTPError, URLError) as e:
         print(f"An error ocurred: {e}")
         return []
 
 if __name__ == '__main__':
-    result = fetch_data(url)
+    result = fetchData(url)
     print(result)

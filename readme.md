@@ -1,1 +1,1 @@
-ESCREVER AQUI amanha
+:w
