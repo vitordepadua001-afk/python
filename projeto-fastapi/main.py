@@ -35,4 +35,5 @@ async def read_item(item_id: int, show_price: bool = True):
     return {"item": product}
 
 @app.put("/items/{item_id}", response_model=ITEM)
-async def change_item(item_id: int, item: ITEM)
+async def update_item(item_id: int, item: ITEM):
+    ...
