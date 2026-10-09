@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from schema import ITEM
 
 app = FastAPI()
 
@@ -19,16 +19,10 @@ ITEMS = {
     }
 }
 
-class ITEM(BaseModel):
-    name: str = Field(min_length=3, max_length=50, description="Item name")
-    description: str | None = Field(max_length=300, description="Description of product")
-    price: int = Field(gt=0, description="Item price")
-    avaiable: bool = Field(default=True, description="Item avaiable")
-
 @app.get("/items/{item_id}")
 async def read_item(item_id: int, show_price: bool = True):
     if item_id not in ITEMS:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=404, detail="Item not found or not exists.")
     product = dict(ITEMS[item_id])
     if not show_price:
         del product["price"]
@@ -36,4 +30,7 @@ async def read_item(item_id: int, show_price: bool = True):
 
 @app.put("/items/{item_id}", response_model=ITEM)
 async def update_item(item_id: int, item: ITEM):
-    ...
+    if item_id not in ITEMS:
+        raise HTTPException(status_code=404, detail="Item not found or not exists.")
+    ITEMS[item_id] = item.model_dump()
+    return ITEMS[item_id]
